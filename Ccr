@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عيد ميلاد مروى</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&family=Reem+Kufi:wght@500&display=swap');
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
+            --accent: #bc6c25;
+            --glass: rgba(255, 255, 255, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --text: #4a4a4a;
+            --error: #e63946;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            color: var(--text);
+        }
+
+        .background-blobs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            filter: blur(80px);
+        }
+
+        .blob {
+            position: absolute;
+            width: 40vw;
+            height: 40vw;
+            background: #faedcd;
+            border-radius: 50%;
+            animation: move 20s infinite alternate ease-in-out;
+        }
+
+        @keyframes move {
+            from { transform: translate(-10%, -10%); }
+            to { transform: translate(20%, 20%); }
+        }
+
+        .card {
+            width: 95%;
+            max-width: 450px;
+            padding: 40px 20px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Profile Image Style */
+        .profile-img {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            margin-bottom: 20px;
+            animation: fadeInScale 1s ease-out;
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Login Screen */
+        #login-screen {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .login-title {
+            font-family: 'Reem Kufi', sans-serif;
+            font-size: 1.8rem;
+            color: var(--accent);
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.6);
+            font-family: 'Cairo', sans-serif;
+            text-align: center;
+            outline: none;
+        }
+
+        input:focus { border-color: var(--accent); }
+
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 700;
+        }
+
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(188, 108, 37, 0.2); }
+
+        #error-msg { color: var(--error); font-size: 0.9rem; height: 20px; opacity: 0; }
+
+        /* Main Content */
+        #main-content { display: none; opacity: 0; }
+
+        h1 { font-family: 'Reem Kufi', sans-serif; font-size: 2.2rem; color: var(--accent); margin-bottom: 5px; }
+        .name-tag { font-size: 1.6rem; font-weight: 700; margin-bottom: 15px; display: block; }
+        .msg { line-height: 1.6; font-size: 1rem; margin-bottom: 25px; }
+
+        .countdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 25px; }
+        .unit { background: rgba(255,255,255,0.4); padding: 10px 5px; border-radius: 15px; }
+        .num { display: block; font-size: 1.2rem; font-weight: 700; color: var(--accent); }
+        .lab { font-size: 0.7rem; color: #777; }
+
+        canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 100; }
+        .visible { display: block !important; opacity: 1 !important; transform: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="background-blobs">
+        <div class="blob" style="top: -10%; left: -10%;"></div>
+        <div class="blob" style="bottom: -10%; right: -10%; background: #dda15e;"></div>
+    </div>
+
+    <canvas id="confetti"></canvas>
+
+    <div class="card">
+        <div id="login-screen">
+            <h2 class="login-title">تسجيل الدخول</h2>
+            <input type="text" id="username" placeholder="اسم المستخدم">
+            <input type="password" id="password" placeholder="كلمة المرور">
+            <div id="error-msg">Wrong credentials</div>
+            <button class="btn" onclick="handleLogin()">دخول</button>
+        </div>
+
+        <div id="main-content">
+            <img src="data:image/jpeg;base64,/9j/4QD2RXhpZgAATU0AKgAAAAgABQEAAAMAAAABBDgAAAEBAAMAAAABCWAAAIdpAAQAAAABAAAAXgESAAMAAAABAAEAAAEyAAIAAAAUAAAASgAAAAAyMDI2OjAxOjEyIDEwOjMxOjUwAAADkAMAAgAAABQAAACIkAQAAgAAABQAAACckggABAAAAAEAAAAAAAAAADIwMjY6MDE6MTIgMTA6MzE6NTAAMjAyNjowMToxMiAxMDozMTo1MAAAAwEAAAMAAAABBDgAAAEBAAMAAAABCWAAAAEyAAIAAAAUAAAA2gAAAAAyMDI2OjAxOjEyIDEwOjMxOjUwAP/gABBKRklGAAEBAAABAAEAAP/iAdhJQ0NfUFJPRklMRQABAQAAAcgAAAAABDAAAG1udHJSR0IgWFlaIAfgAAEAAQAAAAAAAGFjc3AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAD21gABAAAAANMtAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACWRlc2MAAADwAAAAJHJYWVoAAAEUAAAAFGdYWVoAAAEoAAAAFGJYWVoAAAE8AAAAFHd0cHQAAAFQAAAAFHJUUkMAAAFkAAAAKGdUUkMAAAFkAAAAKGJUUkMAAAFkAAAAKGNwcnQAAAGMAAAAPG1sdWMAAAAAAAAAAQAAAAxlblVTAAAACAAAABwAcwBSAEcAQlhZWiAAAAAAAABvogAAOPUAAAOQWFlaIAAAAAAAAGKZAAC3hQAAGNpYWVogAAAAAAAAJKAAAA+EAAC2z1hZWiAAAAAAAAD21gABAAAAANMtcGFyYQAAAAAABAAAAAJmZgAA8qcAAA1ZAAAT0AAAClsAAAAAAAAAAG1sdWMAAAAAAAAAAQAAAAxlblVTAAAAIAAAABwARwBvAG8AZwBsAGUAIABJAG4AYwAuACAAMgAwADEANv/bAEMAAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAf/bAEMBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAf/AABEICWAEOAMBIgACEQEDEQH/xAAfAAEAAQQDAQEBAAAAAAAAAAAABgUHCAkDBAoCAQv/xACQEAAABQMCAQYFCQ8JEAwHACMBAwQFBgACBwgRIQkSExQVMRZBUVaVFzVVYZSW1NXWChgiIyRSVHF2gZG20dLTJTIzNFNYkpehGSY2QkNFV2ZzdJOxtcHX8DhEYmNldaWys7Th5Tc5WWRyd3i38TpGg4SFuNgaJyhagpijpMV5iKjCxkhJZ4a5w+SipsTHyf/EAB0BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAf/EAB4RAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAf/EAB8RAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAf/aAAAWAP/*...*/" class="profile-img" alt="Marwa">
+            
+            <h1>🎉 عيد ميلاد سعيد 🎂</h1>
+            <span class="name-tag">مروى</span>
+            <p class="msg">بمناسبة يوم ميلادكِ المميّز، نتمنى لكِ عاماً مليئاً بالسعادة والنجاح. كل عام وأنتِ تزدادين تألقاً.</p>
+
+            <div class="countdown">
+                <div class="unit"><span class="num" id="days">00</span><span class="lab">يوم</span></div>
+                <div class="unit"><span class="num" id="hours">00</span><span class="lab">ساعة</span></div>
+                <div class="unit"><span class="num" id="minutes">00</span><span class="lab">دقيقة</span></div>
+                <div class="unit"><span class="num" id="seconds">00</span><span class="lab">ثانية</span></div>
+            </div>
+
+            <button class="btn" onclick="celebrate()">احتفال ✨</button>
+        </div>
+    </div>
+
+    <script>
+        function handleLogin() {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            const error = document.getElementById('error-msg');
+
+            if (user === 'marwa' && pass === '18022008') {
+                document.getElementById('login-screen').style.display = 'none';
+                const main = document.getElementById('main-content');
+                main.classList.add('visible');
+                initCountdown();
+            } else {
+                error.style.opacity = '1';
+                setTimeout(() => { error.style.opacity = '0'; }, 2000);
+            }
+        }
+
+        function initCountdown() {
+            function update() {
+                const now = new Date();
+                let target = new Date(now.getFullYear(), 1, 18);
+                if (now > target) target.setFullYear(now.getFullYear() + 1);
+                const diff = target - now;
+                document.getElementById('days').innerText = Math.floor(diff / 86400000);
+                document.getElementById('hours').innerText = Math.floor((diff % 86400000) / 3600000);
+                document.getElementById('minutes').innerText = Math.floor((diff % 3600000) / 60000);
+                document.getElementById('seconds').innerText = Math.floor((diff % 60000) / 1000);
+            }
+            setInterval(update, 1000); update();
+        }
+
+        const canvas = document.getElementById('confetti');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function celebrate() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            particles = [];
+            for (let i = 0; i < 100; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    size: Math.random() * 7 + 4,
+                    color: ['#bc6c25', '#dda15e', '#fefae0'][Math.floor(Math.random() * 3)],
+                    speed: Math.random() * 4 + 2,
+                    angle: Math.random() * 6
+                });
+            }
+            if (!window.animating) { window.animating = true; animate(); }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.y += p.speed; p.x += Math.sin(p.angle); ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, p.size, p.size); });
+            particles = particles.filter(p => p.y < canvas.height);
+            if (particles.length > 0) requestAnimationFrame(animate); else window.animating = false;
+        }
+    </script>
+</body>
+</html>
